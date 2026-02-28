@@ -8,8 +8,10 @@ export default defineConfig({
   plugins: [react(), tailwindcss()],
   server: { port: 3100 },
   test: {
-    include: ["tests/**/*.test.ts"],
+    globals: true,
+    environment: "jsdom",
+    setupFiles: "./vitest.setup.ts",
+    include: ["tests/**/*.test.ts", "src/**/*.test.{ts,tsx}"],
     clearMocks: true,
-    environment: "node", // explicit; per-file override via @vitest-environment jsdom for React component tests
   },
 });

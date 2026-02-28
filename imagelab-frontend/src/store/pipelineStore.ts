@@ -39,6 +39,8 @@ function calculateComplexity(blocks: number, unique: number): "Low" | "Medium" |
   return "Low";
 }
 
+const ALLOWED_FORMATS = new Set(["png", "jpeg", "jpg", "webp", "gif", "bmp", "tiff"]);
+
 export const usePipelineStore = create<PipelineState>((set) => ({
   originalImage: null,
   imageFormat: "png",
@@ -53,14 +55,18 @@ export const usePipelineStore = create<PipelineState>((set) => ({
   uniqueBlockTypes: 0,
   categoryCounts: {},
   complexity: "Low",
-  setOriginalImage: (image, format) =>
+  setOriginalImage: (image, format) => {
+    const sanitizedFormat = ALLOWED_FORMATS.has(format.toLowerCase())
+      ? format.toLowerCase()
+      : "png";
     set({
       originalImage: image,
-      imageFormat: format,
+      imageFormat: sanitizedFormat,
       processedImage: null,
       error: null,
       timings: null,
-    }),
+    });
+  },
   setProcessedImage: (image) => set({ processedImage: image, error: null, errorStep: null }),
   setExecuting: (executing) => set({ isExecuting: executing }),
   setError: (error, step = null) => set({ error, errorStep: step }),

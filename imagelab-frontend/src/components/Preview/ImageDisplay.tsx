@@ -7,8 +7,16 @@ interface ImageDisplayProps {
   zoomWidth?: number | null;
 }
 
+const ALLOWED_FORMATS = new Set(["png", "jpeg", "jpg", "webp", "gif", "bmp", "tiff"]);
+
 export default function ImageDisplay({ image, format, zoomWidth }: ImageDisplayProps) {
   const [isModalOpen, setIsModalOpen] = useState(false);
+
+  if (!ALLOWED_FORMATS.has(format.toLowerCase())) {
+    console.error(`Blocked disallowed image format: "${format}"`);
+    return null;
+  }
+
   const imageSrc = `data:image/${format};base64,${image}`;
 
   return (
