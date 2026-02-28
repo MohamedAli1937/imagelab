@@ -51,9 +51,7 @@ export default function CategorySection({
 
   const isSearching = searchQuery.trim().length > 0;
   const filteredBlocks = isSearching
-    ? category.blocks.filter((b) =>
-        b.label.toLowerCase().includes(searchQuery.toLowerCase())
-      )
+    ? category.blocks.filter((b) => b.label.toLowerCase().includes(searchQuery.toLowerCase()))
     : category.blocks;
 
   const effectiveOpen = isSearching ? filteredBlocks.length > 0 : isOpen;
@@ -74,7 +72,9 @@ export default function CategorySection({
         {Icon && <Icon size={16} color={category.colour} />}
         <span className="text-sm font-medium text-gray-700">{category.name}</span>
         <span className="ml-auto text-xs text-gray-400 font-normal">
-          {isSearching ? `${filteredBlocks.length}/${category.blocks.length}` : category.blocks.length}
+          {isSearching
+            ? `${filteredBlocks.length}/${category.blocks.length}`
+            : category.blocks.length}
         </span>
       </button>
       {effectiveOpen && (
