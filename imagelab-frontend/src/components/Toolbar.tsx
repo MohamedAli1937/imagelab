@@ -1,6 +1,19 @@
 import { useState, useEffect } from "react";
 import * as Blockly from "blockly";
-import { FilePlus, Download, Undo2, Redo2, Play, Loader2, Share2, Keyboard } from "lucide-react";
+import {
+  FilePlus,
+  Download,
+  Undo2,
+  Redo2,
+  Play,
+  Loader2,
+  Share2,
+  Keyboard,
+  PanelLeftClose,
+  PanelLeftOpen,
+  PanelRightClose,
+  PanelRightOpen,
+} from "lucide-react";
 import { usePipelineStore } from "../store/pipelineStore";
 import { executePipeline } from "../api/pipeline";
 import { extractPipeline } from "../hooks/usePipeline";
@@ -10,14 +23,31 @@ import KeyboardShortcutsModal from "./KeyboardShortcutsModal";
 
 interface ToolbarProps {
   workspace: Blockly.WorkspaceSvg | null;
+  isSidebarCollapsed?: boolean;
+  isPreviewCollapsed?: boolean;
+  onToggleSidebar?: () => void;
+  onTogglePreview?: () => void;
 }
 
-// Detect macOS to show Cmd vs Ctrl in tooltips
 const isMac =
-  typeof navigator !== "undefined" && /mac/i.test(navigator.platform || navigator.userAgent);
+  typeof navigator !== "undefined" &&
+  /mac/i.test(
+    (
+      navigator as Navigator & {
+        userAgentData?: { platform?: string };
+      }
+    ).userAgentData?.platform ?? navigator.userAgent,
+  );
 const mod = isMac ? "⌘" : "Ctrl+";
+const modShift = isMac ? "⌘⇧" : "Ctrl+Shift+";
 
-export default function Toolbar({ workspace }: ToolbarProps) {
+export default function Toolbar({
+  workspace,
+  isSidebarCollapsed = false,
+  isPreviewCollapsed = false,
+  onToggleSidebar,
+  onTogglePreview,
+}: ToolbarProps) {
   const {
     originalImage,
     imageFormat,
@@ -116,6 +146,8 @@ export default function Toolbar({ workspace }: ToolbarProps) {
     onDownload: handleDownload,
     onUndo: handleUndo,
     onRedo: handleRedo,
+    onToggleSidebar,
+    onTogglePreview,
     workspace,
   });
 
@@ -126,6 +158,23 @@ export default function Toolbar({ workspace }: ToolbarProps) {
   return (
     <>
       <div className="h-10 flex items-center gap-1 px-3 bg-white dark:bg-gray-800 border-b border-gray-200 dark:border-gray-700 flex-shrink-0">
+        {onToggleSidebar && (
+          <>
+            <button
+              onClick={onToggleSidebar}
+              className={iconBtn}
+              title={
+                isSidebarCollapsed ? `Show Sidebar (${modShift}S)` : `Hide Sidebar (${modShift}S)`
+              }
+              aria-expanded={!isSidebarCollapsed}
+              aria-controls="sidebar-panel"
+              aria-label={isSidebarCollapsed ? "Show Sidebar" : "Hide Sidebar"}
+            >
+              {isSidebarCollapsed ? <PanelLeftOpen size={18} /> : <PanelLeftClose size={18} />}
+            </button>
+            <div className={separator} />
+          </>
+        )}
         <button onClick={handleNew} className={iconBtn} title="New">
           <FilePlus size={18} />
         </button>
@@ -228,6 +277,24 @@ export default function Toolbar({ workspace }: ToolbarProps) {
               </div>
             </div>
           </div>
+        )}
+
+        {onTogglePreview && (
+          <>
+            <div className={separator} />
+            <button
+              onClick={onTogglePreview}
+              className={iconBtn}
+              title={
+                isPreviewCollapsed ? `Show Preview (${modShift}P)` : `Hide Preview (${modShift}P)`
+              }
+              aria-expanded={!isPreviewCollapsed}
+              aria-controls="preview-panel"
+              aria-label={isPreviewCollapsed ? "Show Preview" : "Hide Preview"}
+            >
+              {isPreviewCollapsed ? <PanelRightOpen size={18} /> : <PanelRightClose size={18} />}
+            </button>
+          </>
         )}
       </div>
 

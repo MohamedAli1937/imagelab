@@ -49,3 +49,43 @@
 .blocklyScrollbarVertical {
   display: none !important;
 }
+
+/* Suppress Blockly's internal element transitions during panel resize.
+ * Class names verified against blockly@11.1.1 — re-check after upgrades.
+ * See: https://github.com/google/blockly/blob/master/core/css.ts */
+.imagelab-resizing .blocklyZoom,
+.imagelab-resizing .blocklyTrash,
+.imagelab-resizing .blocklyFlyout {
+  transition: none !important;
+}
+
+@keyframes float1 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(30px, -40px) scale(1.05);
+  }
+}
+
+@keyframes float2 {
+  0%,
+  100% {
+    transform: translate(0, 0) scale(1);
+  }
+  50% {
+    transform: translate(-20px, 30px) scale(0.95);
+  }
+}
+
+@keyframes fadeUp {
+  from {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}

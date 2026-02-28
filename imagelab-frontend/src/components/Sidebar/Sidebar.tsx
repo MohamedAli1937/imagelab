@@ -8,9 +8,17 @@ import { Search, X } from "lucide-react";
 
 interface SidebarProps {
   workspace: Blockly.WorkspaceSvg | null;
+  width: number;
+  isCollapsed: boolean;
+  isResizing?: boolean;
 }
 
-export default function Sidebar({ workspace }: SidebarProps) {
+export default function Sidebar({
+  workspace,
+  width,
+  isCollapsed,
+  isResizing = false,
+}: SidebarProps) {
   const previews = useBlockPreviews();
   const [tick, setTick] = useState(0);
   const [query, setQuery] = useState("");
@@ -42,8 +50,13 @@ export default function Sidebar({ workspace }: SidebarProps) {
   }, [workspace, tick]);
 
   return (
-    <div className="w-80 h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex-shrink-0 flex flex-col">
-      <div className="flex-shrink-0 px-3 py-2 border-b border-gray-200 dark:border-gray-700 flex flex-col gap-2">
+    <div
+      className={`h-full bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 flex flex-col flex-shrink-0 overflow-hidden min-w-0 ${
+        isResizing ? "" : "transition-[width] duration-300 ease-in-out"
+      }`}
+      style={{ width: isCollapsed ? 0 : width }}
+    >
+      <div className="flex-shrink-0 px-3 py-2 border-b border-gray-200 dark:border-gray-700 flex flex-col gap-2 min-w-[200px]">
         <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
           Blocks
         </h2>

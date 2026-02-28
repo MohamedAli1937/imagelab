@@ -3,6 +3,12 @@ import { ZoomIn, ZoomOut, Image, ImageDown, Trash2, Timer } from "lucide-react";
 import { usePipelineStore } from "../../store/pipelineStore";
 import ImageDisplay from "./ImageDisplay";
 
+interface PreviewPaneProps {
+  width?: number;
+  isCollapsed?: boolean;
+  isResizing?: boolean;
+}
+
 function ZoomControls({
   disabled,
   onZoomIn,
@@ -40,7 +46,11 @@ function getStepLabel(operatorType: string): string {
   return underscoreIndex !== -1 ? operatorType.slice(underscoreIndex + 1) : operatorType;
 }
 
-export default function PreviewPane() {
+export default function PreviewPane({
+  width = 320,
+  isCollapsed = false,
+  isResizing = false,
+}: PreviewPaneProps) {
   const { originalImage, imageFormat, processedImage, error, errorStep, clearImage, timings } =
     usePipelineStore();
   const [originalZoom, setOriginalZoom] = useState<number | null>(null);
@@ -52,124 +62,134 @@ export default function PreviewPane() {
     setter((prev) => Math.max((prev ?? 300) - 100, 100));
 
   return (
-    <div className="w-80 h-full bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex flex-col flex-shrink-0">
-      {/* Original image — top half */}
-      <div className="flex-1 flex flex-col min-h-0 border-b border-gray-200 dark:border-gray-700">
-        <div className="px-3 py-1.5 border-b border-gray-200 dark:border-gray-700 flex items-center gap-1.5">
-          <Image size={14} className="text-gray-400" />
-          <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-            Original
-          </h2>
-          {originalImage && (
-            <button
-              onClick={clearImage}
-              className="ml-auto p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-500 transition-colors"
-              title="Remove image"
-            >
-              <Trash2 size={14} />
-            </button>
-          )}
-        </div>
-        <div className="flex-1 flex items-center justify-center p-3 bg-gray-50 dark:bg-gray-900 overflow-auto">
-          {originalImage ? (
-            <ImageDisplay image={originalImage} format={imageFormat} zoomWidth={originalZoom} />
-          ) : (
-            <p className="text-sm text-gray-400 dark:text-gray-500">
-              Use the Read Image block to upload
-            </p>
-          )}
-        </div>
-        <ZoomControls
-          disabled={!originalImage}
-          onZoomIn={zoomIn(setOriginalZoom)}
-          onZoomOut={zoomOut(setOriginalZoom)}
-        />
-      </div>
-
-      {/* Processed image — bottom half */}
-      <div className="flex-1 flex flex-col min-h-0">
-        <div className="flex items-center justify-between px-3 py-1.5 border-b border-gray-200 dark:border-gray-700">
-          <div className="flex items-center gap-1.5">
-            <ImageDown size={14} className="text-gray-400" />
+    <div
+      id="preview-panel"
+      role="complementary"
+      aria-label="Image preview panel"
+      className={`h-full bg-white dark:bg-gray-800 border-l border-gray-200 dark:border-gray-700 flex flex-col flex-shrink-0 overflow-hidden min-w-0 ${
+        isResizing ? "" : "transition-[width] duration-300 ease-in-out"
+      }`}
+      style={{ width: isCollapsed ? 0 : width }}
+    >
+      <div className="min-w-[200px] flex flex-col h-full">
+        {/* Original image — top half */}
+        <div className="flex-1 flex flex-col min-h-0 border-b border-gray-200 dark:border-gray-700">
+          <div className="px-3 py-1.5 border-b border-gray-200 dark:border-gray-700 flex items-center gap-1.5">
+            <Image size={14} className="text-gray-400" />
             <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
-              Processed
+              Original
             </h2>
-            {timings && !error && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-[11px] font-medium text-green-700 dark:text-green-400 ml-1 mt-[-1px]">
-                <Timer size={10} className="text-green-600 dark:text-green-400" />
-                {timings.total_ms.toFixed(1)} ms
-              </span>
-            )}
-            {timings && error && (
-              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 text-[11px] font-medium text-amber-700 dark:text-amber-400 ml-1 mt-[-1px]">
-                <Timer size={10} className="text-amber-600 dark:text-amber-400" />
-                {timings.total_ms.toFixed(1)} ms (partial)
-              </span>
+            {originalImage && (
+              <button
+                onClick={clearImage}
+                className="ml-auto p-1 rounded hover:bg-red-50 dark:hover:bg-red-900/30 text-gray-400 hover:text-red-500 transition-colors"
+                title="Remove image"
+              >
+                <Trash2 size={14} />
+              </button>
             )}
           </div>
+          <div className="flex-1 flex items-center justify-center p-3 bg-gray-50 dark:bg-gray-900 overflow-auto">
+            {originalImage ? (
+              <ImageDisplay image={originalImage} format={imageFormat} zoomWidth={originalZoom} />
+            ) : (
+              <p className="text-sm text-gray-400 dark:text-gray-500">
+                Use the Read Image block to upload
+              </p>
+            )}
+          </div>
+          <ZoomControls
+            disabled={!originalImage}
+            onZoomIn={zoomIn(setOriginalZoom)}
+            onZoomOut={zoomOut(setOriginalZoom)}
+          />
         </div>
-        <div className="flex-1 flex items-center justify-center p-3 bg-gray-50 dark:bg-gray-900 overflow-auto">
-          {processedImage ? (
-            <ImageDisplay image={processedImage} format={imageFormat} zoomWidth={processedZoom} />
-          ) : (
-            <p className="text-sm text-gray-400 dark:text-gray-500">
-              {originalImage ? "Run the pipeline to see results" : "No image loaded"}
-            </p>
+
+        {/* Processed image — bottom half */}
+        <div className="flex-1 flex flex-col min-h-0">
+          <div className="flex items-center justify-between px-3 py-1.5 border-b border-gray-200 dark:border-gray-700">
+            <div className="flex items-center gap-1.5">
+              <ImageDown size={14} className="text-gray-400" />
+              <h2 className="text-xs font-semibold text-gray-500 dark:text-gray-400 uppercase tracking-wider">
+                Processed
+              </h2>
+              {timings && !error && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-green-50 dark:bg-green-900/30 border border-green-200 dark:border-green-800 text-[11px] font-medium text-green-700 dark:text-green-400 ml-1 mt-[-1px]">
+                  <Timer size={10} className="text-green-600 dark:text-green-400" />
+                  {timings.total_ms.toFixed(1)} ms
+                </span>
+              )}
+              {timings && error && (
+                <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-amber-50 dark:bg-amber-900/30 border border-amber-200 dark:border-amber-800 text-[11px] font-medium text-amber-700 dark:text-amber-400 ml-1 mt-[-1px]">
+                  <Timer size={10} className="text-amber-600 dark:text-amber-400" />
+                  {timings.total_ms.toFixed(1)} ms (partial)
+                </span>
+              )}
+            </div>
+          </div>
+          <div className="flex-1 flex items-center justify-center p-3 bg-gray-50 dark:bg-gray-900 overflow-auto">
+            {processedImage ? (
+              <ImageDisplay image={processedImage} format={imageFormat} zoomWidth={processedZoom} />
+            ) : (
+              <p className="text-sm text-gray-400 dark:text-gray-500">
+                {originalImage ? "Run the pipeline to see results" : "No image loaded"}
+              </p>
+            )}
+          </div>
+          {error && (
+            <div className="px-3 py-2 bg-red-50 dark:bg-red-900/30 border-t border-red-200 dark:border-red-800">
+              <p className="text-xs text-red-600 dark:text-red-400 font-semibold mb-0.5">
+                {errorStep !== null ? `Error in Step ${errorStep}` : "Pipeline Error"}
+              </p>
+              <p className="text-xs text-red-600 dark:text-red-400">{error}</p>
+            </div>
           )}
-        </div>
-        {error && (
-          <div className="px-3 py-2 bg-red-50 dark:bg-red-900/30 border-t border-red-200 dark:border-red-800">
-            <p className="text-xs text-red-600 dark:text-red-400 font-semibold mb-0.5">
-              {errorStep !== null ? `Error in Step ${errorStep}` : "Pipeline Error"}
-            </p>
-            <p className="text-xs text-red-600 dark:text-red-400">{error}</p>
-          </div>
-        )}
-        {timings && timings.steps.length > 0 && (
-          <div className="px-3 py-2 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
-            <details className="group">
-              <summary className="text-[10px] uppercase font-semibold text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer select-none">
-                Step Timings
-              </summary>
-              <div className="mt-1.5 space-y-1">
-                {(() => {
-                  const maxMs = timings.steps.reduce((max, s) => Math.max(max, s.duration_ms), 0);
-                  return timings.steps.map((t) => {
-                    const label = getStepLabel(t.operator_type);
-                    const barWidth = maxMs > 0 ? (t.duration_ms / maxMs) * 100 : 0;
-                    return (
-                      <div
-                        key={t.step}
-                        className="flex items-center gap-2 text-[11px] text-gray-500 dark:text-gray-400"
-                      >
-                        <span className="w-4 text-right text-gray-400 dark:text-gray-500 flex-shrink-0">
-                          {t.step}.
-                        </span>
-                        <span className="truncate flex-1 pr-1" title={t.operator_type}>
-                          {label}
-                        </span>
-                        <div className="w-16 h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full flex-shrink-0">
-                          <div
-                            className="h-full bg-indigo-400 rounded-full"
-                            style={{ width: `${barWidth}%` }}
-                          />
+          {timings && timings.steps.length > 0 && (
+            <div className="px-3 py-2 bg-white dark:bg-gray-800 border-t border-gray-200 dark:border-gray-700">
+              <details className="group">
+                <summary className="text-[10px] uppercase font-semibold text-gray-500 dark:text-gray-400 hover:text-indigo-600 dark:hover:text-indigo-400 cursor-pointer select-none">
+                  Step Timings
+                </summary>
+                <div className="mt-1.5 space-y-1">
+                  {(() => {
+                    const maxMs = timings.steps.reduce((max, s) => Math.max(max, s.duration_ms), 0);
+                    return timings.steps.map((t) => {
+                      const label = getStepLabel(t.operator_type);
+                      const barWidth = maxMs > 0 ? (t.duration_ms / maxMs) * 100 : 0;
+                      return (
+                        <div
+                          key={t.step}
+                          className="flex items-center gap-2 text-[11px] text-gray-500 dark:text-gray-400"
+                        >
+                          <span className="w-4 text-right text-gray-400 dark:text-gray-500 flex-shrink-0">
+                            {t.step}.
+                          </span>
+                          <span className="truncate flex-1 pr-1" title={t.operator_type}>
+                            {label}
+                          </span>
+                          <div className="w-16 h-1.5 bg-gray-100 dark:bg-gray-700 rounded-full flex-shrink-0">
+                            <div
+                              className="h-full bg-indigo-400 rounded-full"
+                              style={{ width: `${barWidth}%` }}
+                            />
+                          </div>
+                          <span className="flex-shrink-0 text-gray-600 dark:text-gray-300 w-14 text-right">
+                            {t.duration_ms.toFixed(1)} ms
+                          </span>
                         </div>
-                        <span className="flex-shrink-0 text-gray-600 dark:text-gray-300 w-14 text-right">
-                          {t.duration_ms.toFixed(1)} ms
-                        </span>
-                      </div>
-                    );
-                  });
-                })()}
-              </div>
-            </details>
-          </div>
-        )}
-        <ZoomControls
-          disabled={!processedImage}
-          onZoomIn={zoomIn(setProcessedZoom)}
-          onZoomOut={zoomOut(setProcessedZoom)}
-        />
+                      );
+                    });
+                  })()}
+                </div>
+              </details>
+            </div>
+          )}
+          <ZoomControls
+            disabled={!processedImage}
+            onZoomIn={zoomIn(setProcessedZoom)}
+            onZoomOut={zoomOut(setProcessedZoom)}
+          />
+        </div>
       </div>
     </div>
   );

@@ -6,6 +6,8 @@ interface ShortcutHandlers {
   onDownload: () => void;
   onUndo: () => void;
   onRedo: () => void;
+  onToggleSidebar?: () => void;
+  onTogglePreview?: () => void;
   workspace: Blockly.WorkspaceSvg | null;
 }
 
@@ -25,6 +27,8 @@ export function useKeyboardShortcuts({
   onDownload,
   onUndo,
   onRedo,
+  onToggleSidebar,
+  onTogglePreview,
   workspace,
 }: ShortcutHandlers) {
   useEffect(() => {
@@ -45,6 +49,12 @@ export function useKeyboardShortcuts({
 
       if (!meta) return;
 
+      if (e.shiftKey && (e.key === "p" || e.key === "P")) {
+        e.preventDefault();
+        onTogglePreview?.();
+        return;
+      }
+
       switch (e.key) {
         case "Enter":
           e.preventDefault();
@@ -53,7 +63,11 @@ export function useKeyboardShortcuts({
         case "s":
         case "S":
           e.preventDefault();
-          onDownload();
+          if (e.shiftKey) {
+            onToggleSidebar?.();
+          } else {
+            onDownload();
+          }
           break;
         case "z":
         case "Z":
@@ -78,5 +92,5 @@ export function useKeyboardShortcuts({
 
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [onRun, onDownload, onUndo, onRedo, workspace]);
+  }, [onRun, onDownload, onUndo, onRedo, onToggleSidebar, onTogglePreview, workspace]);
 }

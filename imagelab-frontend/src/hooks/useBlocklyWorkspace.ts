@@ -1,5 +1,6 @@
 import { useRef, useEffect, useState, useCallback } from "react";
 import * as Blockly from "blockly";
+
 import "@blockly/field-angle";
 import "@blockly/field-colour";
 import "@blockly/field-slider";
@@ -178,5 +179,28 @@ export function useBlocklyWorkspace({ isDark = false }: UseBlocklyWorkspaceOptio
     };
   }, [initWorkspace]);
 
+  // ResizeObserver: keep Blockly in sync during sidebar collapse/expand transitions.
+  // Preserve scroll position so blocks and grid stay fixed during resize.
+  useEffect(() => {
+    const el = containerRef.current;
+    const ws = workspaceRef.current;
+    if (!el || !ws) return;
+
+    const ro = new ResizeObserver(() => {
+      requestAnimationFrame(() => svgResizePreservingScroll(workspaceRef.current));
+    });
+    ro.observe(el);
+    return () => ro.disconnect();
+  }, [workspace]);
+
   return { containerRef, workspace };
+}
+
+/** Resize Blockly workspace while preserving scroll so blocks/grid stay fixed. */
+export function svgResizePreservingScroll(workspace: Blockly.WorkspaceSvg | null) {
+  if (!workspace || !workspace.rendered) return;
+  const scrollX = workspace.scrollX;
+  const scrollY = workspace.scrollY;
+  Blockly.svgResize(workspace);
+  workspace.scroll(scrollX, scrollY);
 }
