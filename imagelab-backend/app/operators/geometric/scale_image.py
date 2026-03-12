@@ -20,8 +20,7 @@ class ScaleImage(BaseOperator):
         interpolation_str = str(self.params.get("interpolation", "LINEAR")).upper()
         if interpolation_str not in _INTERPOLATION_MAP:
             raise ValueError(
-                f"Unknown interpolation '{interpolation_str}'. "
-                f"Valid options: {list(_INTERPOLATION_MAP.keys())}"
+                f"Unknown interpolation '{interpolation_str}'. Valid options: {list(_INTERPOLATION_MAP.keys())}"
             )
         interpolation_flag = _INTERPOLATION_MAP[interpolation_str]
 

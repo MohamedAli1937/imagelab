@@ -1,5 +1,6 @@
-import pytest
 import numpy as np
+import pytest
+
 from app.operators.geometric.scale_image import ScaleImage
 
 
