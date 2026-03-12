@@ -1,5 +1,6 @@
 import numpy as np
 import pytest
+
 from app.operators.conversions.invert_image import InvertImage
 
 
