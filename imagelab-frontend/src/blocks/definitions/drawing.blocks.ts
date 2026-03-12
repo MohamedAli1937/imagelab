@@ -113,12 +113,12 @@ export const drawingBlocks = [
       { type: "input_dummy" },
       { type: "field_colour", name: "rgbcolors_input", colour: "#2828cc" },
       { type: "field_number", name: "starting_point_x", value: 0 },
-      { type: "field_number", name: "starting_point_y", value: 0 },
+      { type: "field_number", name: "starting_point_y", value: 30 },
     ],
     previousStatement: null,
     nextStatement: null,
     style: "drawing_style",
     tooltip:
-      "Draws text on the image - Places customizable text at specified coordinates on the image. You can adjust the text content, thickness, scale, and color to suit your needs. This block is ideal for adding annotations, labels, or any textual information directly onto the image.",
+      "Draws text on the image - Places customizable text at specified coordinates on the image. You can adjust the text content, thickness, scale, and color to suit your needs. Note: the y coordinate is the text baseline, not the top edge — y=0 renders text above the image and nothing will be visible.",
   },
 ];

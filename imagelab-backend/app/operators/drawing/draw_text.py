@@ -13,6 +13,6 @@ class DrawText(BaseOperator):
         scale = max(0.1, float(self.params.get("scale", 1)))
         color = hex_to_bgr(self.params.get("rgbcolors_input", "#2828cc"))
         x = int(self.params.get("starting_point_x", 0))
-        y = int(self.params.get("starting_point_y", 0))
+        y = int(self.params.get("starting_point_y", 30))
         cv2.putText(result, text, (x, y), cv2.FONT_HERSHEY_SIMPLEX, scale, color, thickness, cv2.LINE_AA)
         return result
