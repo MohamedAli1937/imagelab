@@ -4,6 +4,7 @@ import * as Blockly from "blockly";
 interface ShortcutHandlers {
   onRun: () => void;
   onDownload: () => void;
+  onExportPython: () => void;
   onUndo: () => void;
   onRedo: () => void;
   workspace: Blockly.WorkspaceSvg | null;
@@ -23,6 +24,7 @@ function isTypingInBlockly(): boolean {
 export function useKeyboardShortcuts({
   onRun,
   onDownload,
+  onExportPython,
   onUndo,
   onRedo,
   workspace,
@@ -53,7 +55,11 @@ export function useKeyboardShortcuts({
         case "s":
         case "S":
           e.preventDefault();
-          onDownload();
+          if (e.shiftKey) {
+            onExportPython();
+          } else {
+            onDownload();
+          }
           break;
         case "z":
         case "Z":
@@ -78,5 +84,5 @@ export function useKeyboardShortcuts({
 
     window.addEventListener("keydown", handler);
     return () => window.removeEventListener("keydown", handler);
-  }, [onRun, onDownload, onUndo, onRedo, workspace]);
+  }, [onRun, onDownload, onExportPython, onUndo, onRedo, workspace]);
 }
