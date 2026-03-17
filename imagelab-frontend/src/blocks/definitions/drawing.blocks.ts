@@ -119,6 +119,6 @@ export const drawingBlocks = [
     nextStatement: null,
     style: "drawing_style",
     tooltip:
-        "Draws text at (x, y) on the image. x=0 is the left edge; y is the text baseline (bottom of most characters) — a value of at least 30 is needed to keep text visible at the top of a typical image. Adjust text, color, scale, and thickness as needed.",
+      "Draws text at (x, y) on the image. x=0 is the left edge; y is the text baseline (bottom of most characters) — a value of at least 30 is needed to keep text visible at the top of a typical image. Adjust text, color, scale, and thickness as needed.",
   },
 ];

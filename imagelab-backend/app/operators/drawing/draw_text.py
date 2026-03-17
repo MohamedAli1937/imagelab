@@ -21,4 +21,3 @@ class DrawText(BaseOperator):
 
         cv2.putText(result, text, (x, y), font, scale, color, thickness, cv2.LINE_AA)
         return result
-    
