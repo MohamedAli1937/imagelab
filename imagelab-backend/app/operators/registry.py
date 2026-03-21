@@ -55,6 +55,7 @@ from app.operators.thresholding.apply_threshold import ApplyThreshold
 from app.operators.thresholding.otsu_threshold import OtsuThreshold
 from app.operators.transformation.distance_transform import DistanceTransform
 from app.operators.transformation.laplacian import Laplacian
+from app.operators.filtering.laplacian import Laplacian
 
 OPERATOR_REGISTRY: dict[str, type[BaseOperator]] = {
     # Basic
@@ -124,6 +125,7 @@ OPERATOR_REGISTRY: dict[str, type[BaseOperator]] = {
     "segmentation_watershed": Watershed,
     "segmentation_kmeans": KMeansSegmentation,
     "segmentation_meanshift": MeanShiftSegmentation,
+    "laplacian": Laplacian,
 }
 
 
