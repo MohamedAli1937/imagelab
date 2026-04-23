@@ -1,32 +1,3 @@
-@keyframes float1 {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(30px, -40px) scale(1.05);
-  }
-}
-@keyframes float2 {
-  0%,
-  100% {
-    transform: translate(0, 0) scale(1);
-  }
-  50% {
-    transform: translate(-20px, 30px) scale(0.95);
-  }
-}
-@keyframes fadeUp {
-  from {
-    opacity: 0;
-    transform: translateY(30px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
 .startBtn:hover:not(:disabled) {
   background: linear-gradient(135deg, #7c3aed, #059669) !important;
   transform: translateY(-2px) !important;
