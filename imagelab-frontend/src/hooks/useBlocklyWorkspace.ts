@@ -1,4 +1,3 @@
-/* eslint-disable react-hooks/preserve-manual-memoization */
 import { useRef, useEffect, useState, useCallback } from "react";
 import * as Blockly from "blockly";
 import "@blockly/field-angle";
@@ -149,6 +148,11 @@ export function useBlocklyWorkspace({ isDark = false }: UseBlocklyWorkspaceOptio
       resizeObserverRef.current = observer;
     }
     updateBlockStats(ws); // Initial stats calculation if any blocks loaded
+    // isDark is intentionally omitted from deps: initWorkspace is a one-shot
+    // initializer (guarded by workspaceRef.current). Live theme toggles are
+    // handled by the setTheme useEffect above, so adding isDark here would
+    // dispose and recreate the workspace on every toggle, losing user blocks.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [setSelectedBlock, updateBlockStats]);
 
   useEffect(() => {
